@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Assignment - LMS{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="max-width: 600px; margin: 2rem auto;">
+    <h2 style="margin-bottom: 0.5rem;">Submit Assignment</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;"><strong>{{ assignment.title }}</strong> - {{ assignment.course.title }}</p>
+    
+    <div style="background: var(--bg-color); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+        <h4 style="margin-bottom: 0.5rem;">Instructions</h4>
+        <p style="font-size: 0.95rem;">{{ assignment.description }}</p>
+        {% if assignment.attachment %}
+            <p style="margin-top: 1rem;"><a href="{{ assignment.attachment.url }}" class="btn" style="background: white; border: 1px solid var(--border-color); font-size: 0.85rem;" download>Download Attachment</a></p>
+        {% endif %}
+    </div>
+
+    {% if submission and submission.status == 'graded' %}
+        <div class="alert alert-success">
+            <strong>Graded:</strong> This assignment has been graded. You received {{ submission.grade }}/100.
+        </div>
+        {% if submission.feedback %}
+            <p style="margin-top: 0.5rem; margin-bottom: 2rem;"><strong>Feedback:</strong> {{ submission.feedback }}</p>
+        {% endif %}
+        <a href="{% url 'student_course_detail' assignment.course.id %}" class="btn btn-primary">Back to Course</a>
+    {% else %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">Upload your work (File)</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <small style="color: var(--danger-color); display: block; margin-top: 0.25rem;">{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">{% if submission %}Update Submission{% else %}Submit Work{% endif %}</button>
+                <a href="{% url 'student_course_detail' assignment.course.id %}" class="btn" style="flex: 1; text-align: center; background: white; border: 1px solid var(--border-color);">Cancel</a>
+            </div>
+        </form>
+    {% endif %}
+</div>
+
+<script>
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        if (el.type !== 'checkbox' && el.type !== 'file') el.classList.add('form-control');
+        if (el.tagName === 'TEXTAREA') el.rows = 4;
+    });
+</script>
+{% endblock %}

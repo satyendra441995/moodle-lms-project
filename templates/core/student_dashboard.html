@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - LMS{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2>Student Dashboard</h2>
+    <a href="{% url 'course_list' %}" class="btn btn-primary">Browse Courses</a>
+</div>
+
+<div class="glass-card">
+    <h3 style="margin-bottom: 1.5rem;">Enrolled Courses</h3>
+    {% if courses %}
+        <div style="display: grid; gap: 1rem;">
+        {% for course in courses %}
+            <div style="padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">{{ course.title }}</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Instructor: {{ course.teacher.username }}</p>
+                </div>
+                <a href="{% url 'student_course_detail' course.id %}" class="btn" style="background: var(--bg-color); border: 1px solid var(--border-color);">View Course</a>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: var(--text-secondary);">You haven't enrolled in any courses yet. <a href="{% url 'course_list' %}">Browse now</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard - LMS{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2>Teacher Dashboard</h2>
+    <a href="{% url 'create_course' %}" class="btn btn-primary">+ Create Course</a>
+</div>
+
+<div class="glass-card">
+    <h3 style="margin-bottom: 1.5rem;">My Courses</h3>
+    {% if courses %}
+        <div style="display: grid; gap: 1rem;">
+        {% for course in courses %}
+            <div style="padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">{{ course.title }}</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">{{ course.description|truncatewords:15 }}</p>
+                </div>
+                <a href="{% url 'teacher_course_detail' course.id %}" class="btn" style="background: var(--bg-color); border: 1px solid var(--border-color);">Manage Course</a>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: var(--text-secondary);">You haven't created any courses yet. Click the button above to start.</p>
+    {% endif %}
+</div>
+{% endblock %}

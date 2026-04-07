@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} - Teacher View{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <a href="{% url 'teacher_dashboard' %}" style="color: var(--text-secondary); display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+        &larr; Back to Dashboard
+    </a>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <h2 style="color: var(--primary-color);">{{ course.title }}</h2>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem; max-width: 800px;">{{ course.description }}</p>
+        </div>
+        <a href="{% url 'create_assignment' course.id %}" class="btn btn-primary">+ Create Assignment</a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <h3 style="margin-bottom: 1.5rem;">Assignments</h3>
+    {% if assignments %}
+        <div style="display: grid; gap: 1rem;">
+        {% for assignment in assignments %}
+            <div style="padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin-bottom: 0.5rem;">{{ assignment.title }}</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Deadline: <strong style="color: var(--danger-color);">{{ assignment.deadline|date:"M d, Y H:i" }}</strong>
+                    </p>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
+                        Submissions: {{ assignment.submissions.count }}
+                    </p>
+                </div>
+                <a href="{% url 'grade_submissions' assignment.id %}" class="btn btn-primary">View Submissions</a>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: var(--text-secondary);">No assignments have been created for this course yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

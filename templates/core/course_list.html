@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Courses - LMS{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <a href="{% url 'student_dashboard' %}" style="color: var(--text-secondary); display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+        &larr; Back to Dashboard
+    </a>
+    <h2 style="color: var(--primary-color);">Available Courses</h2>
+</div>
+
+<div class="glass-card">
+    {% if courses %}
+        <div style="display: grid; gap: 1rem;">
+        {% for course in courses %}
+            <div style="padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin-bottom: 0.5rem;">{{ course.title }}</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; max-width: 600px;">{{ course.description }}</p>
+                    <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;"><strong style="color: var(--text-primary);">Instructor:</strong> {{ course.teacher.username }}</p>
+                </div>
+                <div>
+                    {% if course.id in enrolled %}
+                        <span style="display: inline-block; padding: 0.5rem 1rem; color: var(--secondary-color); font-weight: 600;">&#10003; Enrolled</span>
+                    {% else %}
+                        <form method="post" action="{% url 'enroll_course' course.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Enroll Now</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: var(--text-secondary);">No courses are currently available.</p>
+    {% endif %}
+</div>
+{% endblock %}

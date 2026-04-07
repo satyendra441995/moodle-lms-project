@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load core_extras %}
+
+{% block title %}{{ course.title }} - Assignments{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <a href="{% url 'student_dashboard' %}" style="color: var(--text-secondary); display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+        &larr; Back to Dashboard
+    </a>
+    <h2 style="color: var(--primary-color);">{{ course.title }}</h2>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem;">{{ course.description }}</p>
+</div>
+
+<div class="glass-card">
+    <h3 style="margin-bottom: 1.5rem;">Assignments</h3>
+    {% if assignments %}
+        <div style="display: grid; gap: 1rem;">
+        {% for assignment in assignments %}
+            <div style="padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin-bottom: 0.5rem;">{{ assignment.title }}</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Deadline: <strong style="color: var(--danger-color);">{{ assignment.deadline|date:"M d, Y H:i" }}</strong>
+                    </p>
+                    {% if assignment.id in submitted_assignment_ids %}
+                        {% with submission=submissions|get_item:assignment.id %}
+                        <p style="margin-top: 0.75rem;">
+                            Status: 
+                            <span style="display: inline-block; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 600; 
+                                {% if submission.status == 'graded' %}background-color: #D1FAE5; color: #065F46;{% else %}background-color: #DBEAFE; color: #1E40AF;{% endif %}">
+                                {{ submission.get_status_display }}
+                            </span>
+                        </p>
+                        {% if submission.status == 'graded' %}
+                            <div style="margin-top: 0.5rem; padding: 0.75rem; background: #F9FAFB; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <p style="font-size: 0.9rem; font-weight: 600;">Grade: {{ submission.grade }}/100</p>
+                                {% if submission.feedback %}
+                                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">Feedback: {{ submission.feedback }}</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        <p style="margin-top: 0.75rem;">
+                            Status: <span style="display: inline-block; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 600; background-color: #FEE2E2; color: #991B1B;">Not Submitted</span>
+                        </p>
+                    {% endif %}
+                </div>
+                <div>
+                    <a href="{% url 'submit_assignment' assignment.id %}" class="btn {% if assignment.id in submitted_assignment_ids %}btn{% else %}btn-primary{% endif %}" style="{% if assignment.id in submitted_assignment_ids %}background: white; border: 1px solid var(--border-color);{% endif %}">
+                        {% if assignment.id in submitted_assignment_ids %}View Submission{% else %}Submit Work{% endif %}
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: var(--text-secondary);">No assignments have been posted for this course yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
